@@ -17,15 +17,15 @@ function! FindFiles(searchstring,displayinput)
     if a:displayinput
         let l:selected = inputlist(nresults)
     else
-		let l:shown = 0
+        let l:shown = 0
         for i in l:results
-			if l:shown > 20
-				break
-			endif
+            if l:shown > 20
+                break
+            endif
 
             echom i
 
-			let l:shown = l:shown + 1
+            let l:shown = l:shown + 1
         endfor
     endif
 
@@ -41,15 +41,17 @@ function! StartSearch()
     let l:string = ""
     let l:runfirst = 0
     while l:waitforcommands
-		echo "\nStart search\n"
+        echo "\nStart search\n"
         let l:char = getchar()
-		echom l:char
-		if l:char == "\<BS>"
-            let l:string = strpart(l:string,0,strlen(l:string))
+        echom l:char
+        if l:char == "\<BS>"
+            redraw!
+            let l:string = strpart(l:string,0,strlen(l:string)-1)
             echom "Searching for [" l:string "]"
             call FindFiles(l:string,0)
-			continue
-		endif
+            continue
+        endif
+
         let l:char = nr2char(l:char)
         if l:char =~ "[a-zA-Z0-9\.]"
             let l:string = l:string . l:char
@@ -61,12 +63,13 @@ function! StartSearch()
             echom "Searching for [" l:string "]"
             call FindFiles(l:string,0)
         elseif l:char == ""
-			if strlen(l:string) == 0
-				break
-			endif
+            if strlen(l:string) == 0
+                break
+            endif
             echom "hit enter"
             call FindFiles(l:string,1)
             let l:waitforcommands = 0
+            continue
         elseif
             echom l:char
             let l:waitforcommands = 0
